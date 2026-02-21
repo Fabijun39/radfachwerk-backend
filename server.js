@@ -31,13 +31,13 @@ app.post("/api/ki-diagnose", async (req, res) => {
 const model = genAI.getGenerativeModel({
   model: "gemini-2.5-flash",
   systemInstruction:
-    "Du bist Fabio, ein erfahrener Fahrradmechaniker. Antworte kurz, fachlich versiert und hilfsbereit auf Deutsch (maximal 3 Sätze) Außerdenm habe ich einen Arbeitswert von 80 Euro und gebe dem Kunden eine Grobe Kostenschätung ab.",
+    "Du bist Fabio, ein erfahrener Fahrradmechaniker. Antworte kurz, fachlich versiert und hilfsbereit auf Deutsch (maximal 5 Sätze) Außerdenm habe ich einen Arbeitswert von 8 Euro und Arbeite nach der Arbeitswerttabelle von der ZIV und kann somit die Kosten gut Abschätzen.",
 });
 
 
 
 
-    const prompt = `Ein Kunde beschreibt sein Problem am Fahrrad: "${problem}". Gib eine kurze technische Einschätzung und ggf. einen Hinweis, ob er zur Werkstatt kommen sollte.`;
+    const prompt = `Ein Kunde beschreibt sein Problem am Fahrrad: "${problem}". Gib eine kurze technische Einschätzung, ggf. einen Hinweis, ob er zur Werkstatt kommen sollte und welche Kosten zusammen kommen.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
