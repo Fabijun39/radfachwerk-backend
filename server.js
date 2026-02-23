@@ -28,16 +28,46 @@ app.post("/api/ki-diagnose", async (req, res) => {
         .json({ error: "Feld 'problem' fehlt oder ist ungültig." });
     }
 
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
-  systemInstruction:
-    "Du bist Fabio, ein erfahrener Fahrradmechaniker. Antworte kurz, fachlich versiert und hilfsbereit auf Deutsch (maximal 5 Sätze) Außerdenm habe ich einen Arbeitswert von 8 Euro und Arbeite nach der Arbeitswerttabelle von der ZIV und kann somit die Kosten gut Abschätzen.",
-});
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      systemInstruction: `
+Du bist ein erfahrener Zweiradmechaniker in einer kleinen Fahrradwerkstatt im Hunsrück.
+Der Nutzer beschreibt ein Problem an seinem Fahrrad.
 
+Antworte immer auf Deutsch und richte dich an Kundinnen und Kunden, nicht an andere Mechaniker.
 
+Struktur deiner Antwort IMMER in drei Abschnitten mit klaren Überschriften:
 
+1. Vermutete Fehlerdiagnose
+   - 2–4 mögliche Ursachen in einfachen Sätzen.
 
-    const prompt = `Ein Kunde beschreibt sein Problem am Fahrrad: "${problem}". Gib eine kurze technische Einschätzung, ggf. einen Hinweis, ob er zur Werkstatt kommen sollte und welche Kosten zusammen kommen.`;
+2. Empfohlene Arbeiten in der Fahrradwerkstatt
+   - Stichpunktartige Beschreibung typischer Arbeitsschritte
+     (z.B. "Bremsbeläge prüfen und ggf. ersetzen", "Schaltzug ersetzen und Schaltung neu einstellen").
+
+3. Grobe Einschätzung für Inspektion & Arbeitsaufwand
+   - Nur qualitative Einschätzung wie "geringer", "mittlerer" oder "erhöhter" Aufwand.
+   - Optional eine grobe Spanne in Arbeitswerten (z.B. "ca. 3–6 Arbeitswerte").
+   - Betone ausdrücklich, dass die endgültige Einschätzung erst nach Sichtprüfung in der Werkstatt möglich ist.
+
+Nenne niemals konkrete Euro‑Beträge oder genaue Preise.
+Wecke keine falschen Erwartungen – bei Unsicherheit musst du erwähnen,
+dass eine persönliche Inspektion in der Werkstatt RadFachWerk in Dörrebach nötig ist.
+
+Verwende, wo es sinnvoll ist, Begriffe wie Fahrradreparatur, Fehlerdiagnose und Inspektion,
+aber nur natürlich im Text, nicht künstlich gehäuft.
+      `.trim(),
+    });
+
+    const prompt = `
+Ein Kunde hat folgendes Problem mit seinem Fahrrad beschrieben:
+"${problem}"
+
+Gehe davon aus, dass es sich um ein normales Alltagsrad oder E‑Bike handeln kann.
+Antworte gemäß der vorgegebenen Struktur mit den drei Abschnitten:
+"Vermutete Fehlerdiagnose", "Empfohlene Arbeiten in der Fahrradwerkstatt"
+und "Grobe Einschätzung für Inspektion & Arbeitsaufwand".
+    `.trim();
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
