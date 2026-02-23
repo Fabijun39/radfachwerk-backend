@@ -19,6 +19,9 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
+// Konstante für deinen Arbeitswert
+const AW_EURO = 8; // 8 € pro AW
+
 app.post("/api/ki-diagnose", async (req, res) => {
   try {
     const problem = req.body.problem;
@@ -46,13 +49,16 @@ Struktur deiner Antwort IMMER in drei Abschnitten mit klaren Überschriften:
      (z.B. "Bremsbeläge prüfen und ggf. ersetzen", "Schaltzug ersetzen und Schaltung neu einstellen").
 
 3. Grobe Einschätzung für Inspektion & Arbeitsaufwand
-   - Nur qualitative Einschätzung wie "geringer", "mittlerer" oder "erhöhter" Aufwand.
-   - Optional eine grobe Spanne in Arbeitswerten (z.B. "ca. 3–6 Arbeitswerte").
+   - Schätze eine SPANNE an Arbeitswerten (z.B. "ca. 3–6 AW").
+   - Rechne diese Spanne mit einem Arbeitswert von 8 € pro AW in eine grobe, unverbindliche Kostenspanne um
+     (z.B. "entspricht etwa 24–48 € Arbeitslohn, ohne Teile").
    - Betone ausdrücklich, dass die endgültige Einschätzung erst nach Sichtprüfung in der Werkstatt möglich ist.
 
-Nenne niemals konkrete Euro‑Beträge oder genaue Preise.
-Wecke keine falschen Erwartungen – bei Unsicherheit musst du erwähnen,
-dass eine persönliche Inspektion in der Werkstatt RadFachWerk in Dörrebach nötig ist.
+WICHTIG:
+- Nenne nur Spannen ("ca.", "etwa") und keine festen, verbindlichen Preise.
+- Erwähne immer, dass Ersatzteile und ggf. zusätzliche Arbeiten noch dazukommen können.
+- Wecke keine falschen Erwartungen – bei Unsicherheit musst du erwähnen,
+  dass eine persönliche Inspektion in der Werkstatt RadFachWerk in Dörrebach nötig ist.
 
 Verwende, wo es sinnvoll ist, Begriffe wie Fahrradreparatur, Fehlerdiagnose und Inspektion,
 aber nur natürlich im Text, nicht künstlich gehäuft.
@@ -67,12 +73,16 @@ Gehe davon aus, dass es sich um ein normales Alltagsrad oder E‑Bike handeln ka
 Antworte gemäß der vorgegebenen Struktur mit den drei Abschnitten:
 "Vermutete Fehlerdiagnose", "Empfohlene Arbeiten in der Fahrradwerkstatt"
 und "Grobe Einschätzung für Inspektion & Arbeitsaufwand".
+
+Berücksichtige bei der Kostenspanne, dass ein Arbeitswert (AW) 8 € kostet.
+Gib die Kostenspanne immer deutlich als unverbindliche Schätzung an
+(z.B. "ca." / "etwa" und "ohne Teile").
     `.trim();
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
-    return res.json({ answer: text });
+    return res.json({ answer: text, awEuro: AW_EURO });
   } catch (err) {
     console.error("DETAILLIERTER FEHLER:", err);
     return res
