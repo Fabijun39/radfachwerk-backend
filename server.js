@@ -32,7 +32,7 @@ app.post("/api/ki-diagnose", async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-3.1-flash-lite-preview",
+      model: "gemini-2.5-flash-lite-preview",
       systemInstruction: `
 Du bist ein erfahrener Zweiradmechaniker in einer kleinen Fahrradwerkstatt im Hunsrück.
 Der Nutzer beschreibt ein Problem an seinem Fahrrad.
